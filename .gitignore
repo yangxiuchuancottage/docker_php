@@ -1,0 +1,8 @@
+.idea
+php80/etc/php.ini
+php80/supervisor/*
+php74/etc/php.ini
+php74/supervisor/*
+php73/etc/php.ini
+php73/supervisor/*
+.env

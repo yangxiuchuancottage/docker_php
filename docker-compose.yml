@@ -1,0 +1,43 @@
+services:
+  phpfpm80:
+    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:80
+    ports:
+      - "9000:9000"
+    restart: always
+    volumes:
+      - ./php80/etc/php.ini:/usr/local/etc/php/php.ini
+      - ./php80/supervisor:/etc/supervisor.d
+      - ${WORK_DIR}:/var/www
+    container_name: phpfpm80
+    networks:
+      docker_services_net:
+        ipv4_address: 192.168.10.30
+#  phpfpm74:
+#    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:74
+#    ports:
+#      - "9001:9000"
+#    restart: always
+#    volumes:
+#      - ./php74/etc/php.ini:/usr/local/etc/php/php.ini
+#      - ./php74/supervisor:/etc/supervisor.d
+#      - ${WORK_DIR}:/var/www
+#    container_name: phpfpm74
+#    networks:
+#      docker_services_net:
+#        ipv4_address: 192.168.10.31
+#  phpfpm73:
+#    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:73
+#    ports:
+#      - "9002:9000"
+#    restart: always
+#    volumes:
+#      - ./php73/etc/php.ini:/usr/local/etc/php/php.ini
+#      - ./php73/supervisor:/etc/supervisor.d
+#      - ${WORK_DIR}:/var/www
+#    container_name: phpfpm73
+#    networks:
+#      docker_services_net:
+#        ipv4_address: 192.168.10.32
+networks:
+  docker_services_net:
+    external: true
