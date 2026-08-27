@@ -1,8 +1,34 @@
 services:
+#  phpfpm83:
+#    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:83
+#    ports:
+#      - "9083:9000"
+#    restart: always
+#    volumes:
+#      - ./php83/etc/php.ini:/usr/local/etc/php/php.ini
+#      - ./php83/supervisor:/etc/supervisor.d
+#      - ${WORK_DIR}:/var/www
+#    container_name: phpfpm83
+#    networks:
+#      docker_services_net:
+#        ipv4_address: 192.168.10.83
+#  phpfpm82:
+#    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:82
+#    ports:
+#      - "9082:9000"
+#    restart: always
+#    volumes:
+#      - ./php82/etc/php.ini:/usr/local/etc/php/php.ini
+#      - ./php82/supervisor:/etc/supervisor.d
+#      - ${WORK_DIR}:/var/www
+#    container_name: phpfpm82
+#    networks:
+#      docker_services_net:
+#        ipv4_address: 192.168.10.82
   phpfpm80:
     image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:80
     ports:
-      - "9000:9000"
+      - "9080:9000"
     restart: always
     volumes:
       - ./php80/etc/php.ini:/usr/local/etc/php/php.ini
@@ -11,11 +37,11 @@ services:
     container_name: phpfpm80
     networks:
       docker_services_net:
-        ipv4_address: 192.168.10.30
+        ipv4_address: 192.168.10.80
 #  phpfpm74:
 #    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:74
 #    ports:
-#      - "9001:9000"
+#      - "9074:9000"
 #    restart: always
 #    volumes:
 #      - ./php74/etc/php.ini:/usr/local/etc/php/php.ini
@@ -24,11 +50,11 @@ services:
 #    container_name: phpfpm74
 #    networks:
 #      docker_services_net:
-#        ipv4_address: 192.168.10.31
+#        ipv4_address: 192.168.10.74
 #  phpfpm73:
 #    image: registry.cn-beijing.aliyuncs.com/yangxiuchuan/php:73
 #    ports:
-#      - "9002:9000"
+#      - "9073:9000"
 #    restart: always
 #    volumes:
 #      - ./php73/etc/php.ini:/usr/local/etc/php/php.ini
@@ -37,7 +63,7 @@ services:
 #    container_name: phpfpm73
 #    networks:
 #      docker_services_net:
-#        ipv4_address: 192.168.10.32
+#        ipv4_address: 192.168.10.73
 networks:
   docker_services_net:
     external: true
