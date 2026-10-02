@@ -1,23 +1,30 @@
-FROM php:7.3.33-fpm-alpine3.15
-LABEL authors="yangxiuchuan"
+FROM php:7.3.33-fpm-bullseye
+LABEL authors="yangxiuchuan<757791723@qq.com>"
 WORKDIR /var/www
-
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
-
+RUN sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g; /debian-security/d' /etc/apt/sources.list
 RUN set -xue; \
-    apk add --no-cache freetype libevent libjpeg-turbo libmcrypt libpng libxml2 libzip libwebp libxpm rabbitmq-c supervisor && \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS freetype-dev libevent-dev libjpeg-turbo-dev libmcrypt-dev libpng-dev libxml2-dev libzip-dev libwebp-dev libxpm-dev rabbitmq-c-dev && \
-    docker-php-ext-configure gd --with-freetype-dir --with-jpeg-dir --with-webp-dir --with-png-dir --with-zlib-dir --with-xpm-dir && \
-    NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1) && \
-    docker-php-ext-install -j${NPROC} bcmath exif gd pcntl pdo_mysql mysqli zip sockets && \
-    pecl install redis-5.3.7 && \
-    pecl install mongodb-1.15.1 && \
-    pecl install mcrypt-1.0.6 && \
-    pecl install --configureoptions 'enable-openssl="yes"' swoole-4.8.13 && \
-    pecl install amqp-1.11.0 && \
-    docker-php-ext-enable redis mongodb mcrypt swoole amqp && \
-    docker-php-source delete && \
-    apk del .build-deps && \
-    rm -rf /tmp/* /var/cache/apk/* /tmp/pear ~/.pearrc
-
-RUN set -xue;php -r "copy('https://install.phpcomposer.com/installer', 'composer-setup.php');" && php composer-setup.php && php -r "unlink('composer-setup.php');" && mv composer.phar /usr/local/bin/composer
+    apt-get update; \
+    apt-get install -y --no-install-recommends libfreetype6 libjpeg62-turbo libpng16-16 libwebp6 libwebpdemux2 libzip4 librabbitmq4 libmcrypt4 libxpm4 libstdc++6 supervisor; \
+    apt-get install -y --no-install-recommends $PHPIZE_DEPS libfreetype-dev libjpeg62-turbo-dev libpng-dev libwebp-dev libzip-dev librabbitmq-dev libmcrypt-dev libxpm-dev libssl-dev; \
+    printf '#!/bin/sh\ncase "$1" in\n  --cflags) pkg-config --cflags freetype2;;\n  --libs) pkg-config --libs freetype2;;\n  --version) pkg-config --modversion freetype2;;\n  *) exit 1;;\nesac\n' > /usr/local/bin/freetype-config; \
+    chmod +x /usr/local/bin/freetype-config; \
+    docker-php-ext-configure gd --with-freetype-dir --with-jpeg-dir --with-webp-dir --with-png-dir --with-zlib-dir --with-xpm-dir; \
+    NPROC=$(grep -c ^processor /proc/cpuinfo 2>/dev/null || 1); \
+    docker-php-ext-install -j${NPROC} bcmath exif gd pcntl pdo_mysql mysqli zip sockets; \
+    pecl install redis-5.3.7; \
+    pecl install mongodb-1.15.1; \
+    pecl install mcrypt-1.0.6; \
+    pecl install --configureoptions 'enable-openssl="yes"' swoole-4.8.13; \
+    pecl install amqp-1.11.0; \
+    docker-php-ext-enable redis mongodb mcrypt swoole amqp; \
+    docker-php-source delete; \
+    apt-get purge -y --auto-remove $PHPIZE_DEPS libfreetype-dev libjpeg62-turbo-dev libpng-dev libwebp-dev libzip-dev librabbitmq-dev libmcrypt-dev libxpm-dev libssl-dev; \
+    apt-get clean; \
+    rm -rf /tmp/* /var/lib/apt/lists/* /tmp/pear ~/.pearrc /usr/local/bin/freetype-config
+RUN set -xue; \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"; \
+    php -r "copy('https://composer.github.io/installer.sig', 'composer-setup.sig');"; \
+    php -r "if (hash_file('sha384', 'composer-setup.php') !== trim(file_get_contents('composer-setup.sig'))) { unlink('composer-setup.php'); unlink('composer-setup.sig'); fwrite(STDERR, 'Invalid installer signature'.PHP_EOL); exit(1); }"; \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer; \
+    php -r "unlink('composer-setup.php'); unlink('composer-setup.sig');"; \
+    composer --version
